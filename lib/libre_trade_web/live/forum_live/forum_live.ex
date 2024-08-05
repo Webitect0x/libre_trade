@@ -1,14 +1,14 @@
 defmodule LibreTradeWeb.ForumLive do
   use LibreTradeWeb, :live_view
 
-  alias LibreTrade.Communities
+  alias LibreTrade.Threads
 
   def mount(_params, _session, socket) do
     {:ok,
      assign(
        socket,
-       :communities,
-       Communities.list_communities()
+       :threads,
+       Threads.list_threads()
      )}
   end
 end

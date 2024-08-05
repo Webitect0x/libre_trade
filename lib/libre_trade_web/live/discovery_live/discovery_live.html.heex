@@ -6,8 +6,8 @@
   </div>
 
   <div class="mt-[2rem]">
-    <%= for community <- @communities do %>
-      <div><%= community.name %></div>
+    <%= for thread <- @threads do %>
+      <div><%= thread.name %></div>
     <% end %>
   </div>
 

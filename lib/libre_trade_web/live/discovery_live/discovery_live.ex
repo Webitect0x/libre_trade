@@ -2,18 +2,18 @@ defmodule LibreTradeWeb.DiscoveryLive do
   use LibreTradeWeb, :live_view
 
   alias LibreTradeWeb.DiscoveryLive
-  alias LibreTrade.Communities
+  alias LibreTrade.Threads
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, communities: Communities.list_communities())}
+    {:ok, assign(socket, threads: Threads.list_threads())}
   end
 
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
 
-  def handle_info({:community_created, community_params}, socket) do
-    IO.inspect(community_params)
+  def handle_info({:thread_created, thread_params}, socket) do
+    IO.inspect(thread_params)
     {:noreply, socket}
   end
 end

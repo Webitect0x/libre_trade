@@ -1,0 +1,47 @@
+<div class="flex gap-2">
+  <div  class="h-[90vh] w-4/5 border overflow-y-scroll" >
+    <.post :for={post <- @posts} post={post} thread_name={@thread_name} />
+  </div>
+
+
+  <div class="h-[90vh] w-1/5 border text-center">
+    <div class="flex flex-col gap-2">
+      <h1 class="mt-[2rem] text-2xl font-bold"><%= String.capitalize(@thread_name) %></h1>
+      <div>
+        <%= @thread_description %>
+      </div>
+      <ul>
+        <li class="flex flex-col gap-2">
+          <.link :if={@current_user} patch={~p"/forum/thread/#{@thread_name}/new"}>
+            Create Post
+          </.link>
+          <.link>Subscribe</.link>
+          <.link>Chat</.link>
+        </li>
+      </ul>
+
+      <h4>Moderators</h4>
+      <ul>
+        <li>
+          <.link navigate={~p"/forum/discovery"}>
+            Admin
+          </.link>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <.modal
+    :if={@live_action == :new}
+    id="create-post-modal"
+    show
+    on_cancel={JS.navigate(~p"/forum/thread/#{@thread_name}")}
+  >
+    <.live_component
+      module={PostFormComponent}
+      id="create-post"
+      thread_name={@thread_name}
+      thread_id={@thread_id}
+      current_user={@current_user}
+    />
+  </.modal>
+</div>

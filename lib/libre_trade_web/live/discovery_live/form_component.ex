@@ -1,13 +1,11 @@
 defmodule LibreTradeWeb.DiscoveryLive.FormComponent do
   use LibreTradeWeb, :live_component
 
-  alias LibreTrade.Communities.Community
-  alias LibreTrade.Communities
+  alias LibreTrade.Threads
+  alias LibreTrade.Threads.Thread
 
   def mount(socket) do
-    changeset = Communities.change_community(%Community{})
-
-    {:ok, assign_form(socket, changeset)}
+    {:ok, assign_form(socket, Threads.change_thread(%Thread{}))}
   end
 
   def render(assigns) do
@@ -22,10 +20,10 @@ defmodule LibreTradeWeb.DiscoveryLive.FormComponent do
     """
   end
 
-  def handle_event("save", %{"community" => community_params}, socket) do
-    case Communities.create_community(community_params) do
-      {:ok, _community} ->
-        send(self(), {:community_created, community_params})
+  def handle_event("save", %{"thread" => thread_params}, socket) do
+    case Threads.create_thread(thread_params) do
+      {:ok, _thread} ->
+        send(self(), {:thread_created, thread_params})
         {:noreply, socket}
 
       {:error, %Ecto.Changeset{} = changeset} ->
