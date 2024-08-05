@@ -1,0 +1,22 @@
+<div class="text-center mt-[5rem]">
+  <h1>Browse through different topics!</h1>
+  <div class="flex items-center justify-between max-w-[50rem] mx-auto mt-[2rem]">
+    <.link patch={~p"/forum/discovery/new"}>Create Topic</.link>
+    <input placeholder="Search" class="glass-effect px-2"/>
+  </div>
+
+  <div class="mt-[2rem]">
+    <%= for community <- @communities do %>
+      <div><%= community.name %></div>
+    <% end %>
+  </div>
+
+  <.modal
+    id="NewTopic"
+    show
+    :if={@live_action == :new}
+    on_cancel={JS.navigate(~p"/forum/discovery")}
+  >
+    <.live_component module={DiscoveryLive.FormComponent} id="new-topic-form" />
+  </.modal>
+</div>

@@ -1,0 +1,17 @@
+    <div class="flex gap-2">
+      <div class="h-[90vh] w-4/5 border"></div>
+
+      <div class="h-[90vh] w-1/5 border text-center">
+        <div class="flex flex-col gap-2">
+          <h1 class="mt-[2rem]">LibreForum</h1>
+          <div class="text-xs mt-[2rem]">Communities</div>
+          <%= for community <- @communities do %>
+            <.link navigate={~p"/forum/#{community.name}"}><%= community.name %></.link>
+          <% end %>
+
+          <.link class="w-[8rem] mx-auto" navigate={~p"/forum/discovery"}>
+            Discovery
+          </.link>
+        </div>
+      </div>
+    </div>
