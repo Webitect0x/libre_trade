@@ -2,12 +2,21 @@ defmodule LibreTrade.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias LibreTrade.Posts.Post
+
   schema "users" do
     field :email, :string
+    field :username, :string
+    field :bio, :string
+    field :avatar, :string
+    field :pgp_key, :string
+    field :account_type, Ecto.Enum, values: [:user, :vendor, :admin], default: :user
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
+
+    has_many :posts, Post
 
     timestamps(type: :utc_datetime)
   end
@@ -37,9 +46,17 @@ defmodule LibreTrade.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :username, :bio, :avatar, :pgp_key, :account_type])
+    |> validate_username()
     |> validate_email(opts)
     |> validate_password(opts)
+  end
+
+  defp validate_username(changeset) do
+    changeset
+    |> validate_required([:username])
+    |> validate_length(:username, max: 20, min: 3)
+    |> unique_constraint(:username)
   end
 
   defp validate_email(changeset, opts) do

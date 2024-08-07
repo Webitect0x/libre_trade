@@ -1,4 +1,4 @@
-defmodule LibreTradeWeb.DiscoveryLive.FormComponent do
+defmodule LibreTradeWeb.ThreadFormComponent do
   use LibreTradeWeb, :live_component
 
   alias LibreTrade.Threads

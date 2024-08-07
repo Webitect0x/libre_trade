@@ -12,11 +12,11 @@
   </div>
 
   <.modal
-    id="NewTopic"
+    id="new-thread"
     show
     :if={@live_action == :new}
     on_cancel={JS.navigate(~p"/forum/discovery")}
   >
-    <.live_component module={DiscoveryLive.FormComponent} id="new-topic-form" />
+    <.live_component module={ThreadFormComponent} id="new-thread-form" />
   </.modal>
 </div>

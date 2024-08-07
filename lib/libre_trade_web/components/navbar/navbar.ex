@@ -24,7 +24,7 @@ defmodule LibreTradeWeb.Navbar do
       <ul class="relative z-10 flex items-center justify-end gap-4 px-4 sm:px-6 lg:px-8">
         <%= if @current_user do %>
           <li class="text-[0.8125rem] cursor-pointer leading-6" phx-click={toggle_menu()}>
-            <%= @current_user.email %>
+            <%= @current_user.username %>
           </li>
           <.toggle_menu toggle={toggle_menu()} />
         <% else %>

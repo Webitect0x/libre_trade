@@ -4,7 +4,8 @@ defmodule LibreTrade.Repo.Migrations.CreatePosts do
   def change do
     create table(:posts) do
       add :title, :string
-      add :content, :text
+      add :content, :string
+      add :upvotes, :integer
       add :user_id, references(:users, on_delete: :nothing)
       add :thread_id, references(:threads, on_delete: :nothing)
 

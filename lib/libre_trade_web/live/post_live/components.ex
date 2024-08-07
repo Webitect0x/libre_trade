@@ -1,4 +1,4 @@
-defmodule LibreTradeWeb.ThreadLive.Components do
+defmodule LibreTradeWeb.Post.Components do
   use Phoenix.Component
 
   import LibreTradeWeb.CoreComponents, only: [icon: 1]
@@ -14,6 +14,9 @@ defmodule LibreTradeWeb.ThreadLive.Components do
 
       <.link patch={"/forum/thread/#{@thread_name}/#{@post.id}"}>
         <h1 class="text-lg font-bold"><%= @post.title %></h1>
+        <div>
+          <%= @post.content %>
+        </div>
       </.link>
     </div>
     """

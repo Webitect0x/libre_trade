@@ -1,46 +1,19 @@
 <div class="flex gap-2">
   <div  class="h-[90vh] w-4/5 border overflow-y-scroll" >
-    <.post :for={post <- @posts} post={post} thread_name={@thread_name} />
+    <.post :for={post <- Enum.reverse(@thread.posts)} post={post} thread_name={@thread.name} />
   </div>
-
-
-  <div class="h-[90vh] w-1/5 border text-center">
-    <div class="flex flex-col gap-2">
-      <h1 class="mt-[2rem] text-2xl font-bold"><%= String.capitalize(@thread_name) %></h1>
-      <div>
-        <%= @thread_description %>
-      </div>
-      <ul>
-        <li class="flex flex-col gap-2">
-          <.link :if={@current_user} patch={~p"/forum/thread/#{@thread_name}/new"}>
-            Create Post
-          </.link>
-          <.link>Subscribe</.link>
-          <.link>Chat</.link>
-        </li>
-      </ul>
-
-      <h4>Moderators</h4>
-      <ul>
-        <li>
-          <.link navigate={~p"/forum/discovery"}>
-            Admin
-          </.link>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <.thread_bar thread={@thread} current_user={@current_user} is_subscribed={@is_subscribed} />
   <.modal
     :if={@live_action == :new}
     id="create-post-modal"
     show
-    on_cancel={JS.navigate(~p"/forum/thread/#{@thread_name}")}
+    on_cancel={JS.navigate(~p"/forum/thread/#{@thread.name}")}
   >
     <.live_component
       module={PostFormComponent}
       id="create-post"
-      thread_name={@thread_name}
-      thread_id={@thread_id}
+      thread_name={@thread.name}
+      thread_id={@thread.id}
       current_user={@current_user}
     />
   </.modal>

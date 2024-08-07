@@ -11,6 +11,11 @@ defmodule LibreTradeWeb.ToggleMenu do
     >
       <li>
         <.link navigate="/users/settings" class="text-[0.8125rem] leading-6 font-semibold">
+          Profile
+        </.link>
+      </li>
+      <li>
+        <.link navigate="/users/settings" class="text-[0.8125rem] leading-6 font-semibold">
           Settings
         </.link>
       </li>

@@ -8,22 +8,6 @@ defmodule LibreTrade.Threads do
 
   alias LibreTrade.Threads.Thread
 
-  def subscribe do
-    Phoenix.PubSub.subscribe(LibreTrade.PubSub, "threads")
-  end
-
-  def broadcast({:ok, data}, tag) do
-    Phoenix.PubSub.broadcast(
-      LibreTrade.PubSub,
-      "threads",
-      {tag, data}
-    )
-
-    {:ok, data}
-  end
-
-  def broadcast({:error, _changeset} = error, _tag), do: error
-
   @doc """
   Returns the list of threads.
 
@@ -35,6 +19,21 @@ defmodule LibreTrade.Threads do
   """
   def list_threads do
     Repo.all(Thread)
+  end
+
+  @doc """
+  Returns the list of threads with posts.
+
+  ## Examples
+
+      iex> list_threads_with_posts()
+      [%Thread{posts: [%Post{}, ...]}, ...]
+
+  """
+
+  def list_threads_with_posts do
+    Repo.all(Thread)
+    |> Repo.preload(:posts)
   end
 
   @doc """
@@ -122,100 +121,117 @@ defmodule LibreTrade.Threads do
     Thread.changeset(thread, attrs)
   end
 
-  alias LibreTrade.Threads.Post
+  alias LibreTrade.Threads.Subscription
 
   @doc """
-  Returns the list of posts.
+  Returns the list of subscribtions.
 
   ## Examples
 
-      iex> list_posts()
-      [%Post{}, ...]
+      iex> list_subscribtions()
+      [%Subscription{}, ...]
 
   """
-  def list_posts do
-    Repo.all(Post)
+  def list_subscriptions do
+    Repo.all(Subscription)
   end
 
   @doc """
-  Gets a single post.
+  Gets a single subscription.
 
-  Raises `Ecto.NoResultsError` if the Post does not exist.
+  Raises `Ecto.NoResultsError` if the Subscription does not exist.
 
   ## Examples
 
-      iex> get_post!(123)
-      %Post{}
+      iex> get_subscription!(123)
+      %Subscription{}
 
-      iex> get_post!(456)
+      iex> get_subscription!(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
+  def get_subscription!(id), do: Repo.get!(Subscription, id)
 
-  @doc """
-  Creates a post.
+  def is_subscribed?(thread, user) do
+    if user == nil do
+      false
+    else
+      Repo.get_by(
+        Subscription,
+        thread_id: thread.id,
+        subscriber_id: user.id
+      ) != nil
+    end
+  end
 
-  ## Examples
-
-      iex> create_post(%{field: value})
-      {:ok, %Post{}}
-
-      iex> create_post(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_post(attrs \\ %{}) do
-    %Post{}
-    |> Post.changeset(attrs)
-    |> Repo.insert()
-    |> broadcast(:post_created)
+  def toggle_subscription(thread, user, is_subscribed) do
+    if is_subscribed do
+      delete_subscription(thread, user)
+    else
+      create_subscription(
+        thread,
+        %{subscriber_id: user.id, thread_id: thread.id}
+      )
+    end
   end
 
   @doc """
-  Updates a post.
+  Creates a subscription.
 
   ## Examples
 
-      iex> update_post(post, %{field: new_value})
-      {:ok, %Post{}}
+      iex> create_subscription(%{field: value})
+      {:ok, %Subscription{}}
 
-      iex> update_post(post, %{field: bad_value})
+      iex> create_subscription(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_post(%Post{} = post, attrs) do
-    post
-    |> Post.changeset(attrs)
+  def create_subscription(thread, attrs \\ %{}) do
+    with {:ok, _} <-
+           %Subscription{}
+           |> Subscription.changeset(attrs)
+           |> Repo.insert() do
+      update_thread(thread, %{subscribers: thread.subscribers + 1})
+    end
+  end
+
+  @doc """
+  Updates a subscription.
+
+  ## Examples
+
+      iex> update_subscription(subscription, %{field: new_value})
+      {:ok, %Subscription{}}
+
+      iex> update_subscription(subscription, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_subscription(%Subscription{} = subscription, attrs) do
+    subscription
+    |> Subscription.changeset(attrs)
     |> Repo.update()
   end
 
   @doc """
-  Deletes a post.
+  Deletes a subscription.
 
   ## Examples
 
-      iex> delete_post(post)
-      {:ok, %Post{}}
+      iex> delete_subscription(subscription)
+      {:ok, %Subscription{}}
 
-      iex> delete_post(post)
+      iex> delete_subscription(subscription)
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_post(%Post{} = post) do
-    Repo.delete(post)
-  end
+  def delete_subscription(thread, user) do
+    dbg("DELETE SUBSCRIPTION")
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking post changes.
+    Repo.get_by(Subscription, thread_id: thread.id, subscriber_id: user.id)
+    |> Repo.delete()
 
-  ## Examples
-
-      iex> change_post(post)
-      %Ecto.Changeset{data: %Post{}}
-
-  """
-  def change_post(%Post{} = post, attrs \\ %{}) do
-    Post.changeset(post, attrs)
+    update_thread(thread, %{subscribers: thread.subscribers - 1})
   end
 end

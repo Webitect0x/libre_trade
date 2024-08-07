@@ -5,6 +5,7 @@ defmodule LibreTrade.Repo.Migrations.CreateThreads do
     create table(:threads) do
       add :name, :string
       add :description, :text
+      add :subscribers, :integer, default: 0
       add :logo, :string
 
       timestamps(type: :utc_datetime)

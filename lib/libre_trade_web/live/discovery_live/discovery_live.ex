@@ -1,7 +1,7 @@
 defmodule LibreTradeWeb.DiscoveryLive do
   use LibreTradeWeb, :live_view
 
-  alias LibreTradeWeb.DiscoveryLive
+  alias LibreTradeWeb.ThreadFormComponent
   alias LibreTrade.Threads
 
   def mount(_params, _session, socket) do

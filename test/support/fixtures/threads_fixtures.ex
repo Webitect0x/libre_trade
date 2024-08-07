@@ -21,17 +21,14 @@ defmodule LibreTrade.ThreadsFixtures do
   end
 
   @doc """
-  Generate a post.
+  Generate a subscription.
   """
-  def post_fixture(attrs \\ %{}) do
-    {:ok, post} =
+  def subscription_fixture(attrs \\ %{}) do
+    {:ok, subscription} =
       attrs
-      |> Enum.into(%{
-        content: "some content",
-        title: "some title"
-      })
-      |> LibreTrade.Threads.create_post()
+      |> Enum.into(%{})
+      |> LibreTrade.Threads.create_subscription()
 
-    post
+    subscription
   end
 end

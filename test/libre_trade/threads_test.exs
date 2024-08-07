@@ -35,7 +35,12 @@ defmodule LibreTrade.ThreadsTest do
 
     test "update_thread/2 with valid data updates the thread" do
       thread = thread_fixture()
-      update_attrs = %{name: "some updated name", description: "some updated description", logo: "some updated logo"}
+
+      update_attrs = %{
+        name: "some updated name",
+        description: "some updated description",
+        logo: "some updated logo"
+      }
 
       assert {:ok, %Thread{} = thread} = Threads.update_thread(thread, update_attrs)
       assert thread.name == "some updated name"
@@ -61,59 +66,59 @@ defmodule LibreTrade.ThreadsTest do
     end
   end
 
-  describe "posts" do
-    alias LibreTrade.Threads.Post
+  describe "subscribtions" do
+    alias LibreTrade.Threads.Subscription
 
     import LibreTrade.ThreadsFixtures
 
-    @invalid_attrs %{title: nil, content: nil}
+    @invalid_attrs %{}
 
-    test "list_posts/0 returns all posts" do
-      post = post_fixture()
-      assert Threads.list_posts() == [post]
+    test "list_subscribtions/0 returns all subscribtions" do
+      subscription = subscription_fixture()
+      assert Threads.list_subscribtions() == [subscription]
     end
 
-    test "get_post!/1 returns the post with given id" do
-      post = post_fixture()
-      assert Threads.get_post!(post.id) == post
+    test "get_subscription!/1 returns the subscription with given id" do
+      subscription = subscription_fixture()
+      assert Threads.get_subscription!(subscription.id) == subscription
     end
 
-    test "create_post/1 with valid data creates a post" do
-      valid_attrs = %{title: "some title", content: "some content"}
+    test "create_subscription/1 with valid data creates a subscription" do
+      valid_attrs = %{}
 
-      assert {:ok, %Post{} = post} = Threads.create_post(valid_attrs)
-      assert post.title == "some title"
-      assert post.content == "some content"
+      assert {:ok, %Subscription{} = subscription} = Threads.create_subscription(valid_attrs)
     end
 
-    test "create_post/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Threads.create_post(@invalid_attrs)
+    test "create_subscription/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Threads.create_subscription(@invalid_attrs)
     end
 
-    test "update_post/2 with valid data updates the post" do
-      post = post_fixture()
-      update_attrs = %{title: "some updated title", content: "some updated content"}
+    test "update_subscription/2 with valid data updates the subscription" do
+      subscription = subscription_fixture()
+      update_attrs = %{}
 
-      assert {:ok, %Post{} = post} = Threads.update_post(post, update_attrs)
-      assert post.title == "some updated title"
-      assert post.content == "some updated content"
+      assert {:ok, %Subscription{} = subscription} =
+               Threads.update_subscription(subscription, update_attrs)
     end
 
-    test "update_post/2 with invalid data returns error changeset" do
-      post = post_fixture()
-      assert {:error, %Ecto.Changeset{}} = Threads.update_post(post, @invalid_attrs)
-      assert post == Threads.get_post!(post.id)
+    test "update_subscription/2 with invalid data returns error changeset" do
+      subscription = subscription_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               Threads.update_subscription(subscription, @invalid_attrs)
+
+      assert subscription == Threads.get_subscription!(subscription.id)
     end
 
-    test "delete_post/1 deletes the post" do
-      post = post_fixture()
-      assert {:ok, %Post{}} = Threads.delete_post(post)
-      assert_raise Ecto.NoResultsError, fn -> Threads.get_post!(post.id) end
+    test "delete_subscription/1 deletes the subscription" do
+      subscription = subscription_fixture()
+      assert {:ok, %Subscription{}} = Threads.delete_subscription(subscription)
+      assert_raise Ecto.NoResultsError, fn -> Threads.get_subscription!(subscription.id) end
     end
 
-    test "change_post/1 returns a post changeset" do
-      post = post_fixture()
-      assert %Ecto.Changeset{} = Threads.change_post(post)
+    test "change_subscription/1 returns a subscription changeset" do
+      subscription = subscription_fixture()
+      assert %Ecto.Changeset{} = Threads.change_subscription(subscription)
     end
   end
 end

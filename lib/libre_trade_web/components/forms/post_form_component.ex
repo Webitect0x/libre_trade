@@ -1,14 +1,14 @@
-defmodule LibreTradeWeb.ThreadLive.PostFormComponent do
+defmodule LibreTradeWeb.PostFormComponent do
   use LibreTradeWeb, :live_component
 
-  alias LibreTrade.Threads.Post
-  alias LibreTrade.Threads
+  alias LibreTrade.Posts.Post
+  alias LibreTrade.Posts
 
   def update(assigns, socket) do
     socket =
       socket
       |> assign(assigns)
-      |> assign_form(Threads.change_post(%Post{}))
+      |> assign_form(Posts.change_post(%Post{}))
 
     {:ok, socket}
   end
@@ -32,7 +32,7 @@ defmodule LibreTradeWeb.ThreadLive.PostFormComponent do
         "user_id" => socket.assigns.current_user.id
       })
 
-    case Threads.create_post(params) do
+    case Posts.create_post(params) do
       {:ok, _post} ->
         socket =
           socket

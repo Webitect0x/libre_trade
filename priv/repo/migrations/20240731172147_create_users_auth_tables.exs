@@ -3,8 +3,14 @@ defmodule LibreTrade.Repo.Migrations.CreateUsersAuthTables do
 
   def change do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
+    execute "CREATE TYPE account_type AS ENUM ('admin', 'user', 'guest')"
 
     create table(:users) do
+      add :username, :citext, null: false
+      add :bio, :string
+      add :avatar, :string
+      add :pgp_key, :string
+      add :account_type, :account_type, null: false
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :utc_datetime
@@ -12,6 +18,7 @@ defmodule LibreTrade.Repo.Migrations.CreateUsersAuthTables do
       timestamps(type: :utc_datetime)
     end
 
+    create unique_index(:users, [:username])
     create unique_index(:users, [:email])
 
     create table(:users_tokens) do
