@@ -22,3 +22,5 @@ jobs:
         run: mix deps.get
 
       - run: mix compile --warnings-as-errors
+# view workflow status - gh workflow view FILE_NAME
+# view log of workdlow - gh run view ID
