@@ -6,7 +6,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    name: Compile
+    name: Compile with mix test
     env:
       MIX_ENV: test
     steps:
@@ -30,9 +30,11 @@ jobs:
             ${{ runner.os }}-mix-
 
       - name: Get project dependencies
-        if: steps.cache-deps.outputs.cache-hit != 'true'
         run: mix deps.get
 
       - run: mix compile --warnings-as-errors
+
+      - name: Run tests
+        run: mix test --max-failures 1 --trace --warnings-as-errors
 # view workflow status - gh workflow view FILE_NAME
 # view log of workdlow - gh run view ID
