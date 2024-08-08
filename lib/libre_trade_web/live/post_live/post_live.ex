@@ -1,10 +1,16 @@
 defmodule LibreTradeWeb.PostLive do
   use LibreTradeWeb, :live_view
+  import LibreTradeWeb.PostLive.Components
 
   alias LibreTrade.Posts
-  alias LibreTradeWeb.CommentFormComponent
+  alias LibreTradeWeb.CreateCommentForm
+  alias LibreTradeWeb.Components.ThreadBar
 
   def mount(%{"id" => id}, _session, socket) do
+    if connected?(socket) do
+      Posts.subscribe_to_comments(id)
+    end
+
     socket =
       socket
       |> assign(:post, Posts.get_post!(id))
@@ -18,6 +24,7 @@ defmodule LibreTradeWeb.PostLive do
   end
 
   def handle_info({:comment_created, comment}, socket) do
+    dbg(comment)
     {:noreply, stream_insert(socket, :comments, comment, at: 0)}
   end
 end

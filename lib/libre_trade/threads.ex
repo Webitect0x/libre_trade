@@ -53,7 +53,7 @@ defmodule LibreTrade.Threads do
   def get_thread!(id), do: Repo.get!(Thread, id)
 
   def get_thread_by_name(name) do
-    Repo.get_by(Thread, name: name) |> Repo.preload(:posts)
+    Repo.get_by(Thread, name: name) |> Repo.preload(posts: [:user])
   end
 
   @doc """

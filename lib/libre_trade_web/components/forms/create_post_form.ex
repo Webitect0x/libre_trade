@@ -1,5 +1,7 @@
-defmodule LibreTradeWeb.PostFormComponent do
+defmodule LibreTradeWeb.CreatePostForm do
   use LibreTradeWeb, :live_component
+
+  import LibreTradeWeb.Utils, only: [assign_form: 2]
 
   alias LibreTrade.Posts.Post
   alias LibreTrade.Posts
@@ -33,20 +35,16 @@ defmodule LibreTradeWeb.PostFormComponent do
       })
 
     case Posts.create_post(params) do
-      {:ok, _post} ->
+      {:ok, post} ->
         socket =
           socket
-          # |> push_navigate(to: "/forum/thread/#{socket.assigns.thread_name}/#{post.id}")
           |> put_flash(:info, "Post created")
+          |> push_navigate(to: "/forum/t/#{socket.assigns.thread_name}/post/#{post.id}")
 
         {:noreply, socket}
 
       {:error, changeset} ->
         {:noreply, socket |> assign_form(changeset)}
     end
-  end
-
-  def assign_form(socket, thread) do
-    assign(socket, :form, to_form(thread))
   end
 end

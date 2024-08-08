@@ -16,8 +16,10 @@ defmodule LibreTradeWeb do
   below. Instead, define additional modules and import
   those modules here.
   """
+  @attr_unused """
+  """
 
-  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(assets fonts images favicon.ico robots.txt uploads)
 
   def router do
     quote do

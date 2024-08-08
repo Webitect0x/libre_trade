@@ -1,5 +1,5 @@
     <div class="flex gap-2">
-      <div class="h-[90vh] w-4/5 overflow-y-scroll border p-2 text-xs">
+      <div class="h-[90vh] w-4/5 overflow-y-scroll glass-effect p-2 text-xs">
         <div class="glass-effect m-4 flex gap-4 border-gray-200 p-4">
           <div class="flex flex-col items-center">
             <.icon name="hero-arrow-up-circle" class="h-4 w-4" />
@@ -8,66 +8,51 @@
           </div>
 
           <div>
-            <span class="italic">user - <%= @post.user.email %></span>
+            <span class="italic"><%= @post.user.username %> * <%= @post.inserted_at %></span>
             <div class="p-2">
               <h1 class="text-lg font-bold"><%= @post.title %></h1>
 
               <%= @post.content %>
-            </div>
-            <div class="p-2">
-              <span>Created <%= @post.inserted_at %></span>
             </div>
           </div>
         </div>
         <div class="p-5 w-full">
           <h1>Comments</h1>
           <.link
-            navigate={~p"/forum/thread/#{@post.thread.name}/#{@post.id}/comment"}
+            navigate={~p"/forum/t/#{@post.thread.name}/#{@post.id}/comment"}
             class="glass-effect rounded-md p-2 "
           >
             Create Comment
           </.link>
+
           <div id="comments" class="mt-5 w-full" phx-update="stream">
-            <div :for={{comment_id, comment} <- @streams.comments} id={comment_id} class="p-2 glass-effect">
-             <.link patch={~p"/profile/user/#{comment.user.username}"}>
-                <%= comment.user.email %>
-              </.link>
-              <div>
-                <%= comment.content %>
-              </div>
-            </div>
+            <.comment
+              :for={{comment_id, comment} <- @streams.comments}
+              id={comment_id}
+              class="p-2 glass-effect"
+              comment={comment}
+            />
           </div>
         </div>
       </div>
 
-      <div class="h-[90vh] w-1/5 border text-center">
-        <div class="flex flex-col gap-2">
-          <h1 class="mt-[2rem] text-2xl font-bold"><%= String.capitalize(@post.thread.name) %></h1>
-          <div>
-            <span class="text-xs">Subscribers: <%= @post.thread.subscribers %></span>
-          </div>
-          <%= @post.thread.description %>
-          <h4>Moderators</h4>
-          <ul>
-            <li>
-              <.link navigate={~p"/forum/discovery"}>
-                Admin
-              </.link>
-            </li>
-          </ul>
-        </div>
-      </div>
+      <.live_component
+        id="thread-bar"
+        module={ThreadBar}
+        thread={@post.thread}
+        current_user={@current_user}
+      />
     </div>
 
     <.modal
       id="create-comment-modal"
-      show
       :if={@live_action == :create_comment}
-      on_cancel={JS.navigate(~p"/forum/thread/#{@post.thread.name}/#{@post.id}")}
+      on_cancel={JS.navigate(~p"/forum/t/#{@post.thread.name}/post/#{@post.id}")}
+      show
     >
       <.live_component
         id="comment-form"
-        module={CommentFormComponent}
+        module={CreateCommentForm}
         post_id={@post.id}
         current_user={@current_user}
         thread_name={@post.thread.name}

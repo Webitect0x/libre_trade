@@ -1,12 +1,10 @@
 defmodule LibreTradeWeb.ThreadLive do
   use LibreTradeWeb, :live_view
+  import LibreTradeWeb.Components.Post
 
-  import LibreTradeWeb.Post.Components
-  import LibreTradeWeb.Components.ThreadBar
-
-  alias LibreTradeWeb.PostFormComponent
-  alias LibreTrade.Posts
-  alias LibreTrade.Threads
+  alias LibreTradeWeb.CreatePostForm
+  alias LibreTradeWeb.Components.ThreadBar
+  alias LibreTrade.{Posts, Threads}
 
   def mount(%{"name" => name}, _session, socket) do
     thread = Threads.get_thread_by_name(name)
@@ -19,18 +17,11 @@ defmodule LibreTradeWeb.ThreadLive do
       {:ok,
        socket
        |> put_flash(:error, "Thread not found")
-       |> redirect(to: ~p"/forum/discovery")}
+       |> redirect(to: ~p"/explore")}
     else
       socket =
         socket
         |> assign(:thread, thread)
-        |> assign(
-          :is_subscribed,
-          Threads.is_subscribed?(
-            thread,
-            socket.assigns.current_user
-          )
-        )
 
       {:ok, socket}
     end
@@ -40,6 +31,36 @@ defmodule LibreTradeWeb.ThreadLive do
     {:noreply, socket}
   end
 
+  def render(assigns) do
+    ~H"""
+    <div class="flex gap-2">
+      <div class="h-[90vh] w-4/5 overflow-y-scroll">
+        <.post :for={post <- Enum.reverse(@thread.posts)} post={post} thread_name={@thread.name} />
+      </div>
+      <.live_component
+        id="thread-bar"
+        module={ThreadBar}
+        thread={@thread}
+        current_user={@current_user}
+      />
+      <.modal
+        :if={@live_action == :new}
+        id="create-post-modal"
+        show
+        on_cancel={JS.navigate(~p"/forum/t/#{@thread.name}")}
+      >
+        <.live_component
+          module={CreatePostForm}
+          id="create-post"
+          thread_name={@thread.name}
+          thread_id={@thread.id}
+          current_user={@current_user}
+        />
+      </.modal>
+    </div>
+    """
+  end
+
   def handle_info({:post_created, post}, socket) do
     {:noreply,
      assign(socket, :thread, %{
@@ -47,26 +68,4 @@ defmodule LibreTradeWeb.ThreadLive do
        | posts: [post | socket.assigns.thread.posts]
      })}
   end
-
-  def handle_event("toggle_subscription", _params, socket) do
-    %{
-      thread: thread,
-      current_user: current_user,
-      is_subscribed: is_subscribed
-    } = socket.assigns
-
-    Threads.toggle_subscription(thread, current_user, is_subscribed)
-
-    {:noreply, socket}
-  end
-
-  # defp update_subscription_status(socket, is_subscribed, thread, delta) do
-  #   assign(socket,
-  #     is_subscribed: is_subscribed,
-  #     thread: %{
-  #       thread
-  #       | subscribers: thread.subscribers + delta
-  #     }
-  #   )
-  # end
 end

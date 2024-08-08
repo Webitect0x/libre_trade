@@ -1,13 +1,29 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech&display=swap");
+
+body {
+  font-family: "Share Tech", sans-serif;
+}
 
 /* This file is for your main application CSS */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.04),
+    rgba(255, 255, 255, 0.02)
+  );
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(3.2px);
-  -webkit-backdrop-filter: blur(3.2px);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  border: 1px solid rgba(58, 58, 58, 0.621);
+}
+
+.glass-effect2 {
+  background: rgba(34, 34, 34, 0.66);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(13.6px);
+  -webkit-backdrop-filter: blur(13.6px);
+  border: 1px solid rgba(34, 34, 34, 0.3);
 }

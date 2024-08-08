@@ -60,8 +60,8 @@ defmodule LibreTradeWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{LibreTradeWeb.UserAuth, :ensure_authenticated}] do
-      live "/forum/thread/:name/new", ThreadLive, :new
-      live "/forum/thread/:name/:id/comment", PostLive, :create_comment
+      live "/forum/t/:name/new", ThreadLive, :new
+      live "/forum/t/:name/:id/comment", PostLive, :create_comment
 
       live "/profile", ProfileLive
 
@@ -79,15 +79,15 @@ defmodule LibreTradeWeb.Router do
       on_mount: [{LibreTradeWeb.UserAuth, :mount_current_user}] do
       live "/", MarketLive
 
-      live "/forum/discovery", DiscoveryLive
-      live "/forum/discovery/new", DiscoveryLive, :new
+      live "/explore", ExploreLive
+      live "/explore/new", ExploreLive, :new
 
       live "/forum", ForumLive
 
-      live "/forum/thread/:name", ThreadLive
-      live "/forum/thread/:name/:id", PostLive
+      live "/forum/t/:name", ThreadLive
+      live "/forum/t/:name/post/:id", PostLive
 
-      live "/profile/user/:username", ProfileLive
+      live "/u/:username", ProfileLive
 
       live "/users/confirm/:token", UserConfirmationLive, :edit
       live "/users/confirm", UserConfirmationInstructionsLive, :new

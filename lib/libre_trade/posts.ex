@@ -8,6 +8,8 @@ defmodule LibreTrade.Posts do
 
   alias LibreTrade.Posts.Post
 
+  alias LibreTrade.Posts.Post.Query
+
   def subscribe() do
     Phoenix.PubSub.subscribe(LibreTrade.PubSub, "threads")
   end
@@ -69,8 +71,14 @@ defmodule LibreTrade.Posts do
     %Post{}
     |> Post.changeset(attrs)
     |> Post.changeset(attrs)
-    |> Repo.insert()
-    |> broadcast(:post_created)
+    |> Repo.insert(preload: :user)
+    |> case do
+      {:ok, post} ->
+        broadcast({:ok, Repo.preload(post, :user)}, :post_created)
+
+      {:error, changeset} ->
+        broadcast({:error, changeset}, :post_created)
+    end
   end
 
   @doc """
@@ -122,6 +130,22 @@ defmodule LibreTrade.Posts do
 
   alias LibreTrade.Posts.Comment
 
+  def subscribe_to_comments(post_id) do
+    Phoenix.PubSub.subscribe(LibreTrade.PubSub, "post:#{post_id}")
+  end
+
+  def broadcast_comment_created({:ok, comment}, tag) do
+    Phoenix.PubSub.broadcast(
+      LibreTrade.PubSub,
+      "post:#{comment.post_id}",
+      {tag, comment}
+    )
+
+    {:ok, comment}
+  end
+
+  def broadcast_comment_created({:error, _changeset} = error, _tag), do: error
+
   @doc """
   Returns the list of comments.
 
@@ -152,12 +176,8 @@ defmodule LibreTrade.Posts do
   def get_comment!(id), do: Repo.get!(Comment, id) |> Repo.preload(:user)
 
   def get_comments_by_post_id(post_id) do
-    Repo.all(
-      from c in Comment,
-        where: c.post_id == ^post_id,
-        order_by: [desc: c.inserted_at],
-        preload: [:user]
-    )
+    Query.comments_by_post_id(post_id)
+    |> Repo.all()
   end
 
   @doc """
@@ -173,17 +193,15 @@ defmodule LibreTrade.Posts do
 
   """
   def create_comment(attrs \\ %{}) do
-    new_comment =
-      %Comment{}
-      |> Comment.changeset(attrs)
-      |> Repo.insert()
-
-    case new_comment do
+    %Comment{}
+    |> Comment.changeset(attrs)
+    |> Repo.insert()
+    |> case do
       {:ok, comment} ->
-        {:ok, Repo.preload(comment, :user)}
+        broadcast({:ok, Repo.preload(comment, :user)}, :comment_created)
 
       {:error, changeset} ->
-        {:error, changeset}
+        broadcast({:error, changeset}, :comment_created)
     end
   end
 

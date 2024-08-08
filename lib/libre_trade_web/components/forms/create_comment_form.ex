@@ -1,5 +1,7 @@
-defmodule LibreTradeWeb.CommentFormComponent do
+defmodule LibreTradeWeb.CreateCommentForm do
   use LibreTradeWeb, :live_component
+
+  import LibreTradeWeb.Utils, only: [assign_form: 2]
 
   alias LibreTrade.Posts
   alias LibreTrade.Posts.Post
@@ -33,20 +35,14 @@ defmodule LibreTradeWeb.CommentFormComponent do
       })
 
     case Posts.create_comment(params) do
-      {:ok, comment} ->
-        send(self(), {:comment_created, comment})
-
+      {:ok, _} ->
         {:noreply,
          push_patch(socket,
-           to: "/forum/thread/#{socket.assigns.thread_name}/#{socket.assigns.post_id}"
+           to: "/forum/t/#{socket.assigns.thread_name}/post/#{socket.assigns.post_id}"
          )}
 
       {:error, changeset} ->
         {:noreply, assign_form(socket, changeset)}
     end
-  end
-
-  def assign_form(socket, changeset) do
-    assign(socket, :form, to_form(changeset))
   end
 end
